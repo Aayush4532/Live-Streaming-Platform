@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"webinar/src/config"
-	"webinar/src/controllers"
 	"webinar/src/routes"
 
 	"github.com/gin-gonic/gin"
@@ -13,16 +12,19 @@ import (
 func main() {
 	godotenv.Load()
 	r := gin.Default()
-	joinGroup := r.Group("/api/join")
+	userGroup := r.Group("/api/user")
 	authGroup := r.Group("/api/auth")
+	hostGroup := r.Group("/api/host");
+	mediaServerGroup := r.Group("/api/media");
 	routes.SetupAuthRoutes(authGroup)
-	routes.SetupJoinRoutes(joinGroup)
+	routes.UserRoutes(userGroup)
+	routes.HostRoutes(hostGroup);
+	routes.MediaRoutes(mediaServerGroup);
+	
 	err := config.InitRedis()
 	if err != nil {
 		panic(err)
 	}
-
-	r.GET("/api/ws", controllers.WsHandler)
 
 	r.Run(":" + os.Getenv("PORT"))
 }

@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"os"
 	"time"
@@ -23,4 +25,13 @@ func GenerateJWT(email, role string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(secret))
+}
+
+func GenerateStreamKey () (string, error){
+	buff := make([] byte, 5);
+	_, err := rand.Read(buff);
+	if err != nil {
+		return "", err;
+	}
+	return hex.EncodeToString(buff), nil;
 }
