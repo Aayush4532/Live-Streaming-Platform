@@ -11,7 +11,7 @@ const Host = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const res = await fetch("http://localhost:1102/api/host/check", {
+                const res = await fetch("https://live-streaming-platform-production.up.railway.app/api/host/check", {
                     method: "GET",
                     credentials: "include",
                 });
@@ -32,7 +32,7 @@ const Host = () => {
 
     const handleStartSeminar = async () => {
         try {
-            const res = await fetch("http://localhost:1102/api/host/create", {
+            const res = await fetch("https://live-streaming-platform-production.up.railway.app/api/host/create", {
                 method: "GET",
                 credentials: "include",
             });

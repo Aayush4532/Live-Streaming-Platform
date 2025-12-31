@@ -7,7 +7,7 @@ const Live = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const PLAYBACK_API = "http://localhost:1102/api/user/join-seminar";
+  const PLAYBACK_API = "https://live-streaming-platform-production.up.railway.app/api/user/join-seminar";
 
   const fetchPlayback = async (isInitial = false) => {
     try {
