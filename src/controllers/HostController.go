@@ -62,3 +62,9 @@ func ValidateSeminarController(c *gin.Context) { // this route is only for nginx
 
 	c.Status(http.StatusOK)
 }
+
+func CheckHostController (c *gin.Context) {
+	c.JSON(200, gin.H {
+		"message" : "authorised",
+	})
+}

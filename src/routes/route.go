@@ -8,7 +8,7 @@ import (
 )
 
 func UserRoutes (r *gin.RouterGroup) {
-	r.POST("/join-seminar", middleware.UserMiddleware(), controllers.StreamAccessController); // this route is for users to get access of the live stream,
+	r.GET("/join-seminar", middleware.UserMiddleware(), controllers.StreamAccessController); // this route is for users to get access of the live stream,
 	// this route will be called after each 3 minutes for refreshing the new sign token to make security standard.
 }
 
@@ -19,6 +19,7 @@ func SetupAuthRoutes (r *gin.RouterGroup) {
 
 func HostRoutes (r *gin.RouterGroup) {
 	r.GET("/create", middleware.HostMiddleware(), controllers.CreateSeminarController); // host route for only for host to start the stream.
+	r.GET("/check", middleware.HostMiddleware(), controllers.CheckHostController) // this is only for let frontend check if to give access of "/host" to user.
 }
 
 

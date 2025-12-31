@@ -27,8 +27,8 @@ func InitRedis() error {
 
 	RDB = redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Username: os.Getenv("REDIS_USER"), // optional
-		Password: os.Getenv("REDIS_PASS"), // optional
+		Username: os.Getenv("REDIS_USER"),
+		Password: os.Getenv("REDIS_PASS"),
 		DB:       0,
 	})
 
