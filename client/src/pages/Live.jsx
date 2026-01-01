@@ -1,34 +1,49 @@
 import React, { useEffect, useRef, useState } from "react";
+import Hls from "hls.js";
 
 const Live = () => {
   const videoRef = useRef(null);
+  const hlsRef = useRef(null); 
   const refreshTimerRef = useRef(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const PLAYBACK_API = "https://live-streaming-platform-production.up.railway.app/api/user/join-seminar";
+  const PLAYBACK_API =
+    "https://live-streaming-platform-production.up.railway.app/api/user/join-seminar";
 
-  const fetchPlayback = async (isInitial = false) => {
+  const attachStream = (playbackUrl) => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = playbackUrl;
+      video.play();
+      return;
+    }
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(playbackUrl);
+      hls.attachMedia(video);
+      hlsRef.current = hls;
+    } else {
+      setError("Browser does not support HLS");
+    }
+  };
+
+  const fetchPlayback = async () => {
     try {
       const res = await fetch(PLAYBACK_API);
       if (!res.ok) throw new Error("Stream unavailable");
 
       const data = await res.json();
-      const playbackUrl = data.playback.url;
-      const refreshIn = data.refresh_in;
-
-      if (videoRef.current) {
-        videoRef.current.src = playbackUrl;
-      }
-
-      if (refreshTimerRef.current) {
-        clearTimeout(refreshTimerRef.current);
-      }
-
-      refreshTimerRef.current = setTimeout(() => {
-        fetchPlayback(false);
-      }, Math.max((refreshIn - 10) * 1000, 10000));
+      attachStream(data.playback.url);
 
       setLoading(false);
     } catch (err) {
@@ -38,15 +53,13 @@ const Live = () => {
   };
 
   useEffect(() => {
-    fetchPlayback(true);
+    fetchPlayback();
 
     return () => {
-      if (refreshTimerRef.current) {
-        clearTimeout(refreshTimerRef.current);
-      }
+      if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
+      if (hlsRef.current) hlsRef.current.destroy();
     };
   }, []);
-
 
   if (loading) {
     return (
@@ -59,26 +72,20 @@ const Live = () => {
   if (error) {
     return (
       <div className="h-screen w-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-white text-lg">Stream Offline</p>
-          <p className="text-zinc-400 text-sm">{error}</p>
-        </div>
+        <p className="text-white">{error}</p>
       </div>
     );
   }
 
   return (
     <div className="h-screen w-screen bg-black flex items-center justify-center">
-      <div className="w-full max-w-screen h-auto aspect-video flex items-center justify-center">
-        <video
-          ref={videoRef}
-          controls
-          autoPlay
-          playsInline
-          className="w-full h-full border-b bg-black object-contain"
-        />
-      </div>
-
+      <video
+        ref={videoRef}
+        controls
+        autoPlay
+        playsInline
+        className="w-full h-full bg-black object-contain"
+      />
     </div>
   );
 };
